@@ -1,0 +1,20 @@
+﻿@using WebMatrix.Data;
+@using BasicASPRazor.PollSystem;
+@using Newtonsoft.Json;
+@{
+    var language = Request.Form["language"];
+    var db = Database.Open("VoteDB");
+    var result = "Insert into pollTb(langauge) values('" + language + "')";
+    db.Query(result);
+    result = "select pollTb.langauge,count(*) as likeCount from pollTb group by pollTb.langauge";
+    var select = db.Query(result);
+
+    var list = new List<Item>();
+    foreach (var row in select)
+    {
+        list.Add(new Item { label = row["langauge"], value = row["likeCount"].ToString() });
+    }
+    var json = JsonConvert.SerializeObject(list);
+    var data = string.Join(",", json);
+    Response.Write(data);
+} 
