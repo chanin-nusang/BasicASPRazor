@@ -1,0 +1,23 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title></title>
+</head>
+<body>
+    @for(var i = 1; i < 10; i++)
+    {
+        //<h2>@i</h2>
+    }
+    @{ 
+        var student = new List<string>();
+        student.Add("สมหมาย");
+        student.Add("สมปอง");
+        student.Add("สมชาย");
+        student.Add("สมหวัง");
+    }
+    @foreach (var x in student)
+    {
+        <h3>@x</h3>
+    }
+</body>
+</html>

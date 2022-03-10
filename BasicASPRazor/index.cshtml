@@ -1,0 +1,67 @@
+﻿<!DOCTYPE html>
+@using WebMatrix.Data;
+<html>
+<head>
+    <title>Basic ASP.NET Razor</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <style>
+        .grid {
+            margin: 4px;
+            border-collapse: collapse;
+            width: 600px;
+        }
+
+            .grid th, .grid td {
+                border: 1px solid #C0C0C0;
+                padding: 5px;
+            }
+
+        .head {
+            background-color: #E8E8E8;
+            font-weight: bold;
+            color: #FFF;
+        }
+
+        .alt {
+            background-color: #E8E8E8;
+            color: #000;
+        }
+    </style>
+</head>
+<body>
+    @{
+        var search = Request.QueryString["search"];
+        var db = Database.Open("CustomerDB");
+        var select = db.Query("select * from customer");
+        var grid = new WebGrid(source: select, rowsPerPage: 10);
+        if (!search.IsEmpty())
+        {
+            select = db.Query("select * from customer where name like '%" + search + "%'");
+            grid = new WebGrid(source: select);
+        }
+    }
+    <h2>ข้อมูลลูกค้าในฐานข้อมูล</h2>
+    <form method="get">
+        Search:<input type="text" id="usr" name="search" />
+        <input type="submit" value="search" class="btn btn-primary" />
+    </form>
+
+    @grid.GetHtml(tableStyle: "grid",
+    headerStyle: "head",
+    alternatingRowStyle: "alt",
+    columns: grid.Columns(grid.Column("id", "รหัสลูกค้า"),
+    grid.Column("name", "ชื่อ-นามสกุล"),
+    grid.Column("address", "ที่อยู่"),
+    grid.Column("email", "อีเมล"),
+    grid.Column("แก้ไขข้อมูล", format:@<a href="~/EditCustomer.cshtml?id=@item.id" class="btn btn-success">Edit</a>),
+                    grid.Column("ลบข้อมูล", format:@<a href="~/DeleteCustomer.cshtml?id=@item.id" class="btn btn-danger" onclick="return ConfirmDelete();">Delete</a>)));
+    <script>
+        function ConfirmDelete() {
+            return confirm("คุณต้องการลบข้อมูลหรือไม่")
+        }
+    </script>
+</body>
+</html>

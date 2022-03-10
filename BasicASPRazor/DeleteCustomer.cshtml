@@ -1,0 +1,17 @@
+﻿<!DOCTYPE html>
+@using WebMatrix.Data;
+<html>
+<head>
+    <title>Delete Customer</title>
+</head>
+<body>
+    @{ 
+        var id = Request.QueryString["id"];
+        var db = Database.Open("CustomerDB");
+        var delete = "delete from customer where id=@0";
+        db.Execute(delete, id);
+        Response.Redirect("index.cshtml");
+
+    }
+</body>
+</html>
