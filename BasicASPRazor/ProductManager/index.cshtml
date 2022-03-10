@@ -1,0 +1,56 @@
+﻿<!DOCTYPE html>
+@using WebMatrix.Data;
+@{
+    var db = Database.Open("StockDB");
+    var sql = "select product.name,product.image, product.price,category.name as 'cat_name' from product inner join category on category.id=product.categoryid";
+    var data = db.Query(sql);
+}
+<html>
+<head>
+    <title>ดูสินค้า</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <br /><br />
+        <a href="~/ProductManager/AddProduct.cshtml" class="btn btn-success">เพิ่มสินค้า</a>
+        <h1>เลือกสินค้าตามราคาที่ท่านต้องการ</h1>
+        <div>
+            <input class="form-control" type="range" min="1000" max="50000" step="1000" value="1000" id="price">
+            <h3 id="price_range"></h3>
+            <div id="product_loading">
+                <div class="row">
+                    @foreach (var row in data)
+                    {
+                        <div class="col-md-4">
+                            <img src="@row["image"]" width="300px" height="300px">
+                            <h3>ชื่อสินค้า @row["name"]</h3>
+                            <h4 style="color:red">ราคา:@string.Format("{0:C}", Convert.ToInt32(@row["price"]))</h4>
+                            <h4 class="text text-muted">ประเภทสินค้า:@row["cat_name"]</h4>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+		$(document).ready(function () {
+			$('#price').change(function () {
+				var price = $(this).val();
+				$('#price_range').text("Price:" + price);
+				$.ajax({
+					url: "load_product.cshtml",
+					method: "POST",
+					data: { price: price },
+					success: function (data) {
+						$('#product_loading').fadeIn(500).html(data);
+					}
+				})
+			});
+		})
+    </script>
+</body>
+</html>

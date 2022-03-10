@@ -1,0 +1,17 @@
+﻿@using WebMatrix.Data;
+@{
+    string output = "";
+    var db = Database.Open("StockDB");
+    var price = Request.Form["price"];
+    var sql = "select product.name,product.image, product.price,category.name as 'cat_name' from product inner join category on category.id=product.categoryid where price<=@0 order by price desc";
+    var data = db.Query(sql, price);
+    foreach (var row in data)
+    {
+        output += "<div class='col-md-4'>";
+        output += "<img src=" + @row["image"] + " width='300px' height='300px'>";
+        output += "<h3>ชื่อสินค้า" + @row["name"] + "</h3>";
+        output += "<h4 style='color:red'>ราคา:" + string.Format("{0:C}", Convert.ToInt32(@row["price"])) + "</h4>";
+        output += "<h4 class='text text-muted'>ประเภท:" + @row["cat_name"] + "</h4></div>";
+    }
+    Response.Write(output);
+}
